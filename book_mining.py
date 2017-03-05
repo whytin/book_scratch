@@ -4,6 +4,7 @@ from time import sleep
 import re
 import sqlite3
 
+''' Different link with different category'''
 #baseurl = "http://shop.oreilly.com/category/browse-subjects/data.do?sortby=publicationDate&page="
 #baseurl = "http://shop.oreilly.com/category/browse-subjects/business.do?sortby=publicationDate&page="
 #baseurl = "http://shop.oreilly.com/category/browse-subjects/design.do?sortby=publicationDate&page="
@@ -17,7 +18,7 @@ import sqlite3
 #baseurl = "http://shop.oreilly.com/category/browse-subjects/programming/android-programming.do?sortby=publicationDate&page="
 baseurl = "http://shop.oreilly.com/category/browse-subjects/programming/ios-programming.do?sortby=publicationDate&page="
 NUM = 0 
-NUM_PAGES = 7
+NUM_PAGES = 7 
 books = []
 conn = sqlite3.connect('program_book.db')
 c = conn.cursor()
@@ -28,6 +29,7 @@ def is_video(td):
     return (len(pricelabels) == 1 and pricelabels[0].text.strip().startswith("Video"))
 
 def ebook_price(td):
+    """Everybook have the price of ebook, and we extract the ebook's price in <span pricelabel>. It is the first one of list."""
     prices = td('span', 'pricelabel')
     try:
         ebook_prices = prices[0].find('span', 'price')
@@ -37,7 +39,7 @@ def ebook_price(td):
         return ebook_prices.text.split('$')[1] 
 
 def book_info(num, td):
-    """Given a BeautifulSoup <td> tag representing a book, extract the book's details and return a dict"""
+    """Given a BeautifulSoup <td> tag representing a book, extract the book's details and return a tuple"""
     title = td.find("div", "thumbheader").a.text
     try:
         author_name = td.find('div', 'AuthorName').text
@@ -62,12 +64,10 @@ for page_num in range(1, NUM_PAGES + 1):
             NUM += 1
             books.append(book_info(NUM, td))
 
+#Avoiding insecure insert, you should use ? as a placeholder and then provide a tuple of values as the second argument to the cursor's execute() method.
 c.executemany('INSERT INTO ios VALUES(?,?,?,?,?,?)', books)
 conn.commit()
 conn.close()
 
-#filename = "book_info.txt"
-#with open(filename, 'a+') as f:
-#    f.write(str(books))
 
 
