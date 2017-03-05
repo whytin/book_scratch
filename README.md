@@ -1,7 +1,4 @@
 #Finding the most popular category of books in O'Reilly
-#Index
-* [Overview](#Overview)
-* [Preparation](#Preparation)
 ##Overview
 Refer to *"Data Science From Scratch"*,  I want to explore which category of books is the largest quantity, and I will recommend you to start studying which kind of books when you are still confused with your future.
 
